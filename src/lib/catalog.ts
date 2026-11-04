@@ -28,7 +28,7 @@ const SONG_FIELDS: FieldKey[] = ['songs', 'mode', 'notes']
 export const PROGRAM_KINDS: KindDef[] = [
   { key: 'oracao_abertura', label: 'Oração de Abertura', duration: 3, personLabel: 'Quem vai orar', fields: ['notes'], group: 'Abertura' },
   { key: 'harpa', label: 'Louvores da Harpa Cristã', duration: 10, personLabel: 'Quem vai cantar / dirigir', fields: ['hymns', 'notes'], group: 'Abertura' },
-  { key: 'leitura_inicial', label: 'Leitura Bíblica Inicial', duration: 3, personLabel: 'Quem vai ler', fields: ['reference', 'notes'], group: 'Abertura' },
+  { key: 'leitura_inicial', label: 'Leitura Bíblica Inicial', duration: 3, personLabel: 'Quem vai ler', fields: ['notes'], group: 'Abertura' },
   { key: 'oracao_igreja', label: 'Oração pela Igreja e pelos Pedidos', duration: 5, personLabel: 'Quem vai orar', fields: ['notes'], group: 'Abertura' },
 
   { key: 'grupo_louvor', label: 'Grupo de Louvor', duration: 15, personLabel: 'Líder do grupo', fields: ['songs', 'mode', 'vocalistas', 'musicos', 'notes'], group: 'Louvor' },
@@ -50,7 +50,7 @@ export const PROGRAM_KINDS: KindDef[] = [
   { key: 'recolhimento_ofertas', label: 'Recolhimento de Dízimos e Ofertas', duration: 5, personLabel: 'Responsável', fields: ['notes'], group: 'Ofertas' },
   { key: 'louvor_ofertas', label: 'Louvor durante as Ofertas', duration: 5, personLabel: 'Quem vai cantar', fields: SONG_FIELDS, group: 'Ofertas' },
 
-  { key: 'leitura_principal', label: 'Leitura Bíblica Principal', duration: 3, personLabel: 'Quem vai ler', fields: ['reference', 'notes'], group: 'Palavra' },
+  { key: 'leitura_principal', label: 'Leitura Bíblica Principal', duration: 3, personLabel: 'Quem vai ler', fields: ['notes'], group: 'Palavra' },
   { key: 'pregacao', label: 'Palavra Principal — Pregação', duration: 40, personLabel: 'Pregador', fields: ['message_title', 'reference', 'notes'], group: 'Palavra' },
   { key: 'apelo', label: 'Apelo', duration: 5, personLabel: 'Quem vai fazer o apelo', fields: ['notes'], group: 'Palavra' },
   { key: 'oracao_aceitaram', label: 'Oração pelos que Aceitaram Jesus', duration: 3, personLabel: 'Quem vai orar', fields: ['notes'], group: 'Palavra' },
@@ -79,6 +79,9 @@ export const SUPPORT_KINDS: KindDef[] = [
   { key: 'cuidado_criancas', label: 'Cuidado das Crianças', duration: 0, personLabel: 'Responsável', fields: ['notes'] },
   { key: 'apoio_outro', label: 'Outra função', duration: 0, personLabel: 'Responsável', fields: ['notes'] },
 ]
+
+// Leituras: quem lê não escolhe o texto. Lê sempre a leitura principal definida pelo pastor no culto.
+export const READING_KINDS = new Set(['leitura_inicial', 'leitura_principal'])
 
 const ALL = new Map([...PROGRAM_KINDS, ...SUPPORT_KINDS].map((k) => [k.key, k]))
 

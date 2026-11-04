@@ -1,4 +1,4 @@
-import { FIELD_LABELS, FIELD_PLACEHOLDERS, kindDef } from '../lib/catalog'
+import { FIELD_LABELS, FIELD_PLACEHOLDERS, READING_KINDS, kindDef } from '../lib/catalog'
 import type { ItemDetails } from '../lib/types'
 import { HymnPicker } from './HymnPicker'
 
@@ -18,6 +18,13 @@ export function DetailFields({
   const set = (patch: Partial<ItemDetails>) => onChange({ ...value, ...patch })
   return (
     <>
+      {READING_KINDS.has(kind) && (
+        <div className="card stack tight" style={{ boxShadow: 'none', background: 'var(--orange-light)' }}>
+          <div className="eyebrow">Texto da leitura</div>
+          <div style={{ fontWeight: 800, fontSize: 17 }}>{readingHint?.trim() || 'O pastor ainda vai definir o texto'}</div>
+          <div className="tiny muted">É a leitura principal do culto, definida pelo pastor.</div>
+        </div>
+      )}
       {def.fields.map((f) => {
         if (f === 'hymns')
           return (
@@ -37,7 +44,7 @@ export function DetailFields({
             </div>
           )
         const multiline = f === 'songs' || f === 'notes' || f === 'musicos' || f === 'vocalistas'
-        const placeholder = f === 'reference' && kind === 'leitura_principal' && readingHint ? readingHint : FIELD_PLACEHOLDERS[f]
+        const placeholder = FIELD_PLACEHOLDERS[f]
         return (
           <label className="field" key={f}>
             <span>{FIELD_LABELS[f]}</span>
@@ -59,7 +66,7 @@ export function detailsSummary(kind: string, d: ItemDetails, readingHint?: strin
   if (d.hymns?.length) out.push(d.hymns.map((h) => `${h.number} · ${h.title}`).join('\n'))
   if (d.songs?.trim()) out.push('♪ ' + d.songs.trim().split('\n').join(' · '))
   if (d.message_title?.trim()) out.push(`“${d.message_title.trim()}”`)
-  const ref = d.reference?.trim() || (kind === 'leitura_principal' ? readingHint || '' : '')
+  const ref = READING_KINDS.has(kind) ? readingHint?.trim() || '' : d.reference?.trim() || ''
   if (ref) out.push('📖 ' + ref)
   if (d.regente?.trim()) out.push('Regente: ' + d.regente.trim())
   if (d.solista?.trim()) out.push('Solista: ' + d.solista.trim())

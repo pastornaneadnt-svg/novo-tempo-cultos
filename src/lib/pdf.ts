@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
-import { FIELD_LABELS, itemLabel, kindDef } from './catalog'
+import { FIELD_LABELS, READING_KINDS, itemLabel, kindDef } from './catalog'
 import { capitalize, fmtDateLong, fmtDuration, fmtMin, hhmm, programItems, supportItems, toMin, withTimes } from './format'
 import type { CultEvent, Item } from './types'
 
@@ -36,6 +36,7 @@ export function detailsText(item: Item, mainReading?: string | null): string {
   const d = item.details || {}
   const def = kindDef(item.kind)
   const parts: string[] = []
+  if (READING_KINDS.has(item.kind) && mainReading?.trim()) parts.push(`Texto: ${mainReading.trim()}`)
   for (const f of def.fields) {
     if (f === 'notes') continue
     if (f === 'hymns') {
@@ -47,7 +48,6 @@ export function detailsText(item: Item, mainReading?: string | null): string {
       continue
     }
     let v = (d[f] as string | undefined)?.trim()
-    if (!v && f === 'reference' && item.kind === 'leitura_principal' && mainReading) v = mainReading
     if (!v) continue
     if (f === 'songs') parts.push(v)
     else parts.push(`${FIELD_LABELS[f]}: ${v}`)

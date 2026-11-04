@@ -1,4 +1,4 @@
-import { itemLabel } from './catalog'
+import { READING_KINDS, itemLabel } from './catalog'
 import { capitalize, fmtDateLong, fmtMin, hhmm, firstName } from './format'
 import type { CultEvent, Item } from './types'
 
@@ -33,6 +33,7 @@ export function inviteMessage(event: CultEvent, item: Item, start: number | null
     `📅 ${when}`,
   ]
   if (event.theme) lines.push(`🔥 Tema: ${event.theme}`)
+  if (READING_KINDS.has(item.kind) && event.main_reading?.trim()) lines.push(`📖 Leitura: ${event.main_reading.trim()}`)
   lines.push(``, `Confirme e veja a programação completa pelo link:`, inviteLink(item.invite_token || ''))
   lines.push(``, `AD Novo Tempo`)
   return lines.join('\n')
