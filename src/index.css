@@ -262,3 +262,14 @@ a { color: var(--orange); }
 .menu-list { display: flex; flex-direction: column; gap: 8px; }
 .menu-list .btn { justify-content: flex-start; }
 hr.sep { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
+
+/* ---------- Puxar para atualizar ---------- */
+body { overscroll-behavior-y: contain; }
+.ptr { position: fixed; top: calc(env(safe-area-inset-top) + 8px); left: 50%; z-index: 60; pointer-events: none; }
+.ptr-ball {
+  width: 40px; height: 40px; border-radius: 50%; background: #fff; color: var(--orange);
+  display: grid; place-items: center; box-shadow: 0 4px 16px rgba(40,49,53,.25);
+}
+.ptr-ball svg { width: 22px; height: 22px; }
+.ptr-ball.spin { animation: spin .7s linear infinite; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

@@ -4,6 +4,7 @@ import type { Session } from '@supabase/supabase-js'
 import { api } from './lib/api'
 import { isConfigured, supabase } from './lib/supabase'
 import { Spinner, ToastProvider } from './components/ui'
+import { PullToRefresh } from './components/PullToRefresh'
 import { LoginPage, ResetPasswordPage } from './pages/Login'
 import { HomePage } from './pages/Home'
 import { EventPage, DirectorPage } from './pages/EventPage'
@@ -55,6 +56,7 @@ export default function App() {
   if (!isConfigured) return <NotConfigured />
   return (
     <ToastProvider>
+      <PullToRefresh />
       <BrowserRouter>
         <Routes>
           <Route path="/c/:token" element={<InvitePage />} />
