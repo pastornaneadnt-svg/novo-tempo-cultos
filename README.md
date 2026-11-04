@@ -25,5 +25,9 @@ As chaves públicas do Supabase ficam em `.env.production` (a chave publishable 
 Para desenvolvimento, crie `.env.local` com `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.
 
 ## Configurar o banco
-Cole todo o conteúdo de `supabase/schema.sql` no Supabase → SQL Editor → Run.
+No Supabase → SQL Editor, rode **nesta ordem** (cada arquivo inteiro, depois Run):
+1. `supabase/schema.sql`
+2. `supabase/002_pastor.sql`
+
+Se rodar o `schema.sql` de novo no futuro, rode também os arquivos seguintes depois dele.
 A primeira conta criada no app vira a do administrador (pastor).

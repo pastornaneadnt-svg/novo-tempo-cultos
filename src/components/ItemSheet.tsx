@@ -153,7 +153,13 @@ export function ItemSheet({
 
       <PersonPicker token={token} value={person} onChange={setPerson} label={def.personLabel} />
 
-      {person && (
+      {person?.is_pastor && (
+        <div className="card small" style={{ boxShadow: 'none', background: 'var(--green-bg)', color: 'var(--green)', fontWeight: 700 }}>
+          ✓ Confirmado automaticamente. Não precisa enviar convite.
+        </div>
+      )}
+
+      {person && !person.is_pastor && (
         <div className="card stack" style={{ boxShadow: 'none', border: '1.5px solid var(--line)' }}>
           <div className="row between">
             <span className="h2" style={{ fontSize: 13 }}>Convite</span>

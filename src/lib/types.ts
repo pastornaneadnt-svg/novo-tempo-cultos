@@ -3,6 +3,7 @@ export interface Person {
   name: string
   phone?: string | null
   note?: string | null
+  is_pastor?: boolean
 }
 
 export type Status = 'pendente' | 'aceito' | 'recusado'

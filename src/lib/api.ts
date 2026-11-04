@@ -29,6 +29,7 @@ export const api = {
   regenItemToken: (token: string | null, id: string) => rpc<string>('regen_item_token', { p_token: token, p_id: id }),
 
   searchPeople: (token: string | null, q: string) => rpc<Person[]>('search_people', { p_token: token, q }),
+  getPastor: (token: string | null) => rpc<Person | null>('get_pastor', { p_token: token }),
   savePerson: (token: string | null, p: Partial<Person>) => rpc<Person>('save_person', { p_token: token, p }),
 
   getInvite: (token: string) => rpc<InviteBundle | null>('get_invite', { p_token: token }),

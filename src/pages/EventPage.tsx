@@ -225,7 +225,15 @@ function EventEditor({ eventId, token }: { eventId: string; token: string | null
       )}
       {open?.t === 'director' && (
         <Sheet title="Link do dirigente" onClose={() => setOpen(null)}>
-          {event.director ? (
+          {event.director?.is_pastor ? (
+            <>
+              <p className="small" style={{ margin: 0 }}>
+                Você mesmo é o dirigente deste culto, então <b>não precisa enviar link</b>.
+              </p>
+              <p className="tiny muted" style={{ margin: 0 }}>Se quiser que outra pessoa dirija, troque o dirigente nas informações do culto.</p>
+              <button className="btn secondary block" onClick={() => setOpen({ t: 'info' })}>Trocar dirigente</button>
+            </>
+          ) : event.director ? (
             <>
               <p className="small" style={{ margin: 0 }}>
                 Com este link, <b>{event.director.name}</b> pode organizar <b>somente este culto</b>, sem precisar de conta.
