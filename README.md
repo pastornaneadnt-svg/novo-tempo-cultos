@@ -28,6 +28,7 @@ Para desenvolvimento, crie `.env.local` com `VITE_SUPABASE_URL` e `VITE_SUPABASE
 No Supabase → SQL Editor, rode **nesta ordem** (cada arquivo inteiro, depois Run):
 1. `supabase/schema.sql`
 2. `supabase/002_pastor.sql`
+3. `supabase/003_corrige_pastor.sql`
 
 Se rodar o `schema.sql` de novo no futuro, rode também os arquivos seguintes depois dele.
 A primeira conta criada no app vira a do administrador (pastor).

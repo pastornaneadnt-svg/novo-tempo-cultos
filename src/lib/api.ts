@@ -1,5 +1,10 @@
 import { supabase } from './supabase'
-import type { EventBundle, EventSummary, InviteBundle, Person, Status } from './types'
+import type { EventBundle, EventSummary, InviteBundle, Item, Person, Status } from './types'
+
+// Oportunidade do pastor é sempre confirmada (não depende de convite).
+function pastorConfirmed<T extends { items: Item[] }>(b: T): T {
+  return { ...b, items: b.items.map((i) => (i.person?.is_pastor ? { ...i, status: 'aceito' as Status } : i)) }
+}
 
 async function rpc<T>(fn: string, args: Record<string, unknown> = {}): Promise<T> {
   const { data, error } = await supabase.rpc(fn, args)
@@ -17,7 +22,7 @@ export const api = {
 
   listEvents: (from: string, to: string) => rpc<EventSummary[]>('list_events', { p_from: from, p_to: to }),
   directorEvent: (token: string) => rpc<string | null>('director_event', { p_token: token }),
-  getEvent: (id: string, token: string | null) => rpc<EventBundle>('get_event', { p_event: id, p_token: token }),
+  getEvent: (id: string, token: string | null) => rpc<EventBundle>('get_event', { p_event: id, p_token: token }).then(pastorConfirmed),
   saveEvent: (token: string | null, p: Record<string, unknown>) => rpc<string>('save_event', { p_token: token, p }),
   deleteEvent: (id: string) => rpc<void>('delete_event', { p_id: id }),
   regenDirectorToken: (id: string) => rpc<string>('regen_director_token', { p_id: id }),
@@ -32,7 +37,12 @@ export const api = {
   getPastor: (token: string | null) => rpc<Person | null>('get_pastor', { p_token: token }),
   savePerson: (token: string | null, p: Partial<Person>) => rpc<Person>('save_person', { p_token: token, p }),
 
-  getInvite: (token: string) => rpc<InviteBundle | null>('get_invite', { p_token: token }),
+  getInvite: (token: string) =>
+    rpc<InviteBundle | null>('get_invite', { p_token: token }).then((b) => {
+      if (!b) return b
+      const n = pastorConfirmed(b)
+      return { ...n, item: b.item.person?.is_pastor ? { ...b.item, status: 'aceito' as Status } : b.item }
+    }),
   respondInvite: (token: string, status: Status, details: Record<string, unknown>, note: string) =>
     rpc<void>('respond_invite', { p_token: token, p_status: status, p_details: details, p_note: note }),
 }
