@@ -170,6 +170,10 @@ function EventEditor({ eventId, token }: { eventId: string; token: string | null
           </div>
         </div>
 
+        <Link to={token ? `/d/${token}/divulgacao` : `/culto/${event.id}/divulgacao`} className="btn dark block" style={{ justifyContent: 'flex-start' }}>
+          <span>✨</span> <span className="grow" style={{ textAlign: 'left' }}>Divulgação · banner com IA</span> <Icon.next />
+        </Link>
+
         <div className="seg">
           <button className={tab === 'programa' ? 'on' : ''} onClick={() => setTab('programa')}>Programação ({prog.length})</button>
           <button className={tab === 'apoio' ? 'on' : ''} onClick={() => setTab('apoio')}>Equipe de apoio ({sup.length})</button>
@@ -216,6 +220,7 @@ function EventEditor({ eventId, token }: { eventId: string; token: string | null
         <Sheet title="Opções do culto" onClose={() => setOpen(null)}>
           <div className="menu-list">
             <button className="btn ghost block" onClick={pdf}><Icon.pdf /> Baixar PDF da programação</button>
+            <Link className="btn ghost block" to={token ? `/d/${token}/divulgacao` : `/culto/${event.id}/divulgacao`}>✨ Divulgação (banner com IA)</Link>
             <button className="btn ghost block" onClick={() => setOpen({ t: 'info' })}><Icon.edit /> Editar informações do culto</button>
             {is_admin && <button className="btn ghost block" onClick={() => setOpen({ t: 'director' })}><Icon.link /> Link do dirigente</button>}
             {is_admin && <hr className="sep" />}
