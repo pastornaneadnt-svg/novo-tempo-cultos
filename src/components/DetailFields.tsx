@@ -107,6 +107,18 @@ export function DetailFields({
                 <button type="button" className={value.mode === 'tocado' ? 'on' : ''} onClick={() => set({ mode: value.mode === 'tocado' ? '' : 'tocado' })}>🎸 Tocado</button>
                 <button type="button" className={value.mode === 'playback' ? 'on' : ''} onClick={() => set({ mode: value.mode === 'playback' ? '' : 'playback' })}>🎧 Playback</button>
               </div>
+              {value.mode === 'tocado' && (
+                <label className="field" style={{ marginTop: 6 }}>
+                  <span>Tom (opcional)</span>
+                  <input className="input" value={value.tone || ''} placeholder="Ex.: G — ou um por louvor: G, D, A" onChange={(e) => set({ tone: e.target.value })} />
+                </label>
+              )}
+              {value.mode === 'playback' && (
+                <label className="field" style={{ marginTop: 6 }}>
+                  <span>Link do playback no YouTube (opcional)</span>
+                  <input className="input" type="url" inputMode="url" value={value.playback_link || ''} placeholder="https://youtube.com/…" onChange={(e) => set({ playback_link: e.target.value })} />
+                </label>
+              )}
             </div>
           )
         const multiline = f === 'notes' || f === 'musicos' || f === 'vocalistas'
@@ -141,6 +153,8 @@ export function detailsSummary(kind: string, d: ItemDetails, readingHint?: strin
     const missing = (d.song_count || 0) - songs.length
     if (missing > 0) out.push(songs.length ? `+ ${missing} louvor(es) a definir` : `♪ ${missing} louvor(es) a definir`)
   }
+  if (d.mode === 'tocado' && d.tone?.trim()) out.push('Tom: ' + d.tone.trim())
+  if (d.mode === 'playback' && d.playback_link?.trim()) out.push('▶ Playback no YouTube')
   if (d.message_title?.trim()) out.push(`“${d.message_title.trim()}”`)
   const ref = READING_KINDS.has(kind) ? readingHint?.trim() || '' : d.reference?.trim() || ''
   if (ref) out.push('📖 ' + ref)

@@ -24,8 +24,11 @@ interface Row {
 
 function Card({ row, readingHint, onOpen, highlight, handle }: { row: Row; readingHint?: string | null; onOpen?: () => void; highlight?: boolean; handle?: ReactNode }) {
   const { item } = row
-  const cls = item.person ? item.status : 'vazio'
+  // Sem confirmação (e não é o pastor): fica sem etiqueta, para o pastor identificar.
+  const noConfirm = !!item.person && item.needs_confirmation === false && !item.person.is_pastor
+  const cls = !item.person ? 'vazio' : noConfirm ? 'semconf' : item.status
   const sum = detailsSummary(item.kind, item.details || {}, readingHint)
+  const link = item.details?.mode === 'playback' ? item.details.playback_link?.trim() : ''
   return (
     <div className={`tl-card ${cls} ${highlight ? 'me' : ''}`} onClick={onOpen} role={onOpen ? 'button' : undefined}>
       <div className="grow">
@@ -35,10 +38,15 @@ function Card({ row, readingHint, onOpen, highlight, handle }: { row: Row; readi
         </div>
         <div className="row wrap" style={{ gap: 6, marginTop: 4 }}>
           <span className="who">{item.person?.name || '—'}</span>
-          <StatusBadge status={item.status} hasPerson={!!item.person} />
+          {!noConfirm && <StatusBadge status={item.status} hasPerson={!!item.person} />}
           {item.details?.mode && <span className="badge mode">{item.details.mode === 'playback' ? 'Playback' : 'Tocado'}</span>}
         </div>
         {sum && <div className="det">{sum}</div>}
+        {link && (
+          <a className="tiny" href={/^https?:\/\//i.test(link) ? link : `https://${link}`} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} style={{ fontWeight: 700, display: 'inline-block', marginTop: 4 }}>
+            ▶ Abrir playback
+          </a>
+        )}
       </div>
       {handle}
     </div>

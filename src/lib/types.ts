@@ -4,6 +4,7 @@ export interface Person {
   phone?: string | null
   note?: string | null
   is_pastor?: boolean
+  uses?: number
 }
 
 export type Status = 'pendente' | 'aceito' | 'recusado'
@@ -19,6 +20,8 @@ export interface ItemDetails {
   songs?: string
   song_count?: number
   mode?: 'tocado' | 'playback' | ''
+  tone?: string
+  playback_link?: string
   regente?: string
   solista?: string
   vocalistas?: string

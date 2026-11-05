@@ -39,6 +39,8 @@ export const api = {
 
   searchPeople: (token: string | null, q: string) => rpc<Person[]>('search_people', { p_token: token, q }),
   getPastor: (token: string | null) => rpc<Person | null>('get_pastor', { p_token: token }),
+  listPeople: (q: string) => rpc<Person[]>('list_people', { q }),
+  deletePerson: (id: string) => rpc<void>('delete_person', { p_id: id }),
   savePerson: (token: string | null, p: Partial<Person>) => rpc<Person>('save_person', { p_token: token, p }),
 
   getInvite: (token: string) =>

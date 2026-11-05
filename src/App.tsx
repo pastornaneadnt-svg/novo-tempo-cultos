@@ -9,6 +9,7 @@ import { LoginPage, ResetPasswordPage } from './pages/Login'
 import { HomePage } from './pages/Home'
 import { EventPage, DirectorPage } from './pages/EventPage'
 import { InvitePage } from './pages/Invite'
+import { ContactsPage } from './pages/Contacts'
 
 function AdminGate({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null | undefined>(undefined)
@@ -64,6 +65,7 @@ export default function App() {
           <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
           <Route path="/" element={<AdminGate><HomePage /></AdminGate>} />
           <Route path="/culto/:id" element={<AdminGate><EventPage /></AdminGate>} />
+          <Route path="/contatos" element={<AdminGate><ContactsPage /></AdminGate>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

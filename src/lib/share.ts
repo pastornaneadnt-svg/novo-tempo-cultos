@@ -32,7 +32,8 @@ export function inviteMessage(event: CultEvent, item: Item, start: number | null
     `Você foi convidado(a) para *${itemLabel(item)}* no ${event.title || 'Culto'}.`,
     `📅 ${when}`,
   ]
-  if (event.theme) lines.push(`🔥 Tema: ${event.theme}`)
+  lines.push(`🔥 Tema do culto: ${event.theme?.trim() || 'a definir'}`)
+  if (event.verse?.trim()) lines.push(`✝️ Versículo: ${event.verse.trim()}`)
   if (READING_KINDS.has(item.kind) && event.main_reading?.trim()) lines.push(`📖 Leitura: ${event.main_reading.trim()}`)
   const d = item.details || {}
   const def = kindDef(item.kind)
@@ -49,7 +50,8 @@ export function directorMessage(event: CultEvent): string {
     `A paz do Senhor${name ? `, ${name}` : ''}! 🙏`,
     ``,
     `Você será o(a) dirigente do ${event.title || 'Culto'} de ${fmtDateLong(event.event_date)}, às ${hhmm(event.start_time)}.`,
-    event.theme ? `🔥 Tema: ${event.theme}` : '',
+    `🔥 Tema do culto: ${event.theme?.trim() || 'a definir'}`,
+    event.verse?.trim() ? `✝️ Versículo: ${event.verse.trim()}` : '',
     ``,
     `Por este link você pode organizar a programação do culto:`,
     directorLink(event.director_token || ''),

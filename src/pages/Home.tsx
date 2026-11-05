@@ -90,7 +90,7 @@ export function HomePage() {
 
   return (
     <div className="app">
-      <BrandBar right={<button className="icon-btn" aria-label="Sair" onClick={() => confirm('Sair da conta?') && supabase.auth.signOut()}><Icon.logout /></button>} />
+      <BrandBar right={<><Link to="/contatos" className="icon-btn" aria-label="Contatos"><Icon.people /></Link><button className="icon-btn" aria-label="Sair" onClick={() => confirm('Sair da conta?') && supabase.auth.signOut()}><Icon.logout /></button></>} />
       <main className="page">
         <Calendar
           month={month}
@@ -103,6 +103,12 @@ export function HomePage() {
           }}
           counts={counts}
         />
+
+        <Link to="/contatos" className="btn secondary block" style={{ justifyContent: 'flex-start' }}>
+          <Icon.people /> <span className="grow" style={{ textAlign: 'left' }}>Contatos</span>
+          <span className="tiny" style={{ fontWeight: 600 }}>ver e cadastrar</span>
+          <Icon.next />
+        </Link>
 
         <section className="stack">
           <div className="row between">

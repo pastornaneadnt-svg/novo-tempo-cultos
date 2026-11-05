@@ -27,7 +27,7 @@ const SONG_FIELDS: FieldKey[] = ['songs', 'mode', 'notes']
 
 export const PROGRAM_KINDS: KindDef[] = [
   { key: 'oracao_abertura', label: 'Oração de Abertura', duration: 3, personLabel: 'Quem vai orar', fields: ['notes'], group: 'Abertura' },
-  { key: 'harpa', label: 'Louvores da Harpa Cristã', duration: 10, personLabel: 'Quem vai cantar / dirigir', fields: ['hymns', 'notes'], group: 'Abertura' },
+  { key: 'harpa', label: 'Louvores da Harpa Cristã', duration: 10, personLabel: 'Quem vai cantar / dirigir', fields: ['hymns', 'mode', 'notes'], group: 'Abertura' },
   { key: 'leitura_inicial', label: 'Leitura Bíblica Inicial', duration: 3, personLabel: 'Quem vai ler', fields: ['notes'], group: 'Abertura' },
   { key: 'oracao_igreja', label: 'Oração pela Igreja e pelos Pedidos', duration: 5, personLabel: 'Quem vai orar', fields: ['notes'], group: 'Abertura' },
 

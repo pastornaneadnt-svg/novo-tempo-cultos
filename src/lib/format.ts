@@ -74,6 +74,11 @@ export function supportItems(items: Item[]): Item[] {
   return items.filter((i) => i.section === 'apoio').sort((a, b) => a.position - b.position)
 }
 
+// Títulos que vêm antes do nome: a saudação usa "Irmã Joana", "Pr. Carlos"…
+const TITLES = /^(irm[ãa]o?|irm\.?|pr\.?|pra\.?|pastor[a]?|pb\.?|presb[ií]tero|dc\.?|dca\.?|di[áa]cono[a]?|ev\.?|evangelista|miss\.?|mission[áa]ri[oa]|ir\.?|sr\.?|sra\.?|dona|d\.)$/i
+
 export function firstName(name?: string | null): string {
-  return (name || '').trim().split(/\s+/)[0] || ''
+  const parts = (name || '').trim().split(/\s+/).filter(Boolean)
+  if (parts.length > 1 && TITLES.test(parts[0])) return `${parts[0]} ${parts[1]}`
+  return parts[0] || ''
 }

@@ -53,7 +53,8 @@ export function detailsText(item: Item, mainReading?: string | null): string {
       continue
     }
     if (f === 'mode') {
-      if (d.mode) parts.push(d.mode === 'playback' ? 'Playback' : 'Tocado')
+      if (d.mode === 'tocado') parts.push(d.tone?.trim() ? `Tocado - Tom: ${d.tone.trim()}` : 'Tocado')
+      if (d.mode === 'playback') parts.push(d.playback_link?.trim() ? `Playback: ${d.playback_link.trim()}` : 'Playback')
       continue
     }
     const v = (d[f] as string | undefined)?.trim()

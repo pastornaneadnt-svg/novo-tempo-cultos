@@ -15,6 +15,7 @@ export const Icon = {
   copy: () => <svg viewBox="0 0 24 24" {...P}><rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15V5a2 2 0 012-2h10" /></svg>,
   edit: () => <svg viewBox="0 0 24 24" {...P}><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z" /></svg>,
   trash: () => <svg viewBox="0 0 24 24" {...P}><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" /></svg>,
+  people: () => <svg viewBox="0 0 24 24" {...P}><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>,
   logout: () => <svg viewBox="0 0 24 24" {...P}><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>,
   check: () => <svg viewBox="0 0 24 24" {...P}><path d="M20 6L9 17l-5-5" /></svg>,
   refresh: () => <svg viewBox="0 0 24 24" {...P}><path d="M21 12a9 9 0 11-3-6.7L21 8M21 3v5h-5" /></svg>,

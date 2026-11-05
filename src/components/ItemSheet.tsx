@@ -165,7 +165,7 @@ export function ItemSheet({
         <label className="row card" style={{ boxShadow: 'none', border: '1.5px solid var(--line)', cursor: 'pointer', padding: '12px 14px' }}>
           <div className="grow">
             <div style={{ fontWeight: 700 }}>Precisa de confirmação?</div>
-            <div className="tiny muted">{needsConf ? 'A pessoa recebe o convite e confirma pelo link.' : 'Fica confirmado direto, sem enviar convite.'}</div>
+            <div className="tiny muted">{needsConf ? 'A pessoa recebe o convite e confirma pelo link.' : 'Sem convite: a pessoa não recebe mensagem.'}</div>
           </div>
           <span className={`switch ${needsConf ? 'on' : ''}`}>
             <input type="checkbox" checked={needsConf} onChange={(e) => setNeedsConf(e.target.checked)} aria-label="Precisa de confirmação" />
@@ -175,8 +175,8 @@ export function ItemSheet({
       )}
 
       {person && !person.is_pastor && !needsConf && (
-        <div className="card small" style={{ boxShadow: 'none', background: 'var(--green-bg)', color: 'var(--green)', fontWeight: 700 }}>
-          ✓ Confirmado. Não precisa enviar convite.
+        <div className="card small" style={{ boxShadow: 'none', background: 'var(--bg)', fontWeight: 600 }}>
+          Não vai convite para esta pessoa. Na programação ela aparece sem etiqueta.
         </div>
       )}
 
