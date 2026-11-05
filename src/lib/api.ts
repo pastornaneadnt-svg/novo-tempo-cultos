@@ -1,9 +1,13 @@
 import { supabase } from './supabase'
 import type { EventBundle, EventSummary, InviteBundle, Item, Person, Status } from './types'
 
-// Oportunidade do pastor é sempre confirmada (não depende de convite).
+// Oportunidade do pastor, ou que não precisa de confirmação, é sempre confirmada.
+export function autoConfirmed(i: Pick<Item, 'person' | 'needs_confirmation'>): boolean {
+  return !!i.person && (!!i.person.is_pastor || i.needs_confirmation === false)
+}
+
 function pastorConfirmed<T extends { items: Item[] }>(b: T): T {
-  return { ...b, items: b.items.map((i) => (i.person?.is_pastor ? { ...i, status: 'aceito' as Status } : i)) }
+  return { ...b, items: b.items.map((i) => (autoConfirmed(i) ? { ...i, status: 'aceito' as Status } : i)) }
 }
 
 async function rpc<T>(fn: string, args: Record<string, unknown> = {}): Promise<T> {
@@ -41,7 +45,7 @@ export const api = {
     rpc<InviteBundle | null>('get_invite', { p_token: token }).then((b) => {
       if (!b) return b
       const n = pastorConfirmed(b)
-      return { ...n, item: b.item.person?.is_pastor ? { ...b.item, status: 'aceito' as Status } : b.item }
+      return { ...n, item: autoConfirmed(b.item) ? { ...b.item, status: 'aceito' as Status } : b.item }
     }),
   respondInvite: (token: string, status: Status, details: Record<string, unknown>, note: string) =>
     rpc<void>('respond_invite', { p_token: token, p_status: status, p_details: details, p_note: note }),

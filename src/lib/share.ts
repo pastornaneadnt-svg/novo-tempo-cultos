@@ -1,4 +1,4 @@
-import { READING_KINDS, itemLabel } from './catalog'
+import { READING_KINDS, itemLabel, kindDef } from './catalog'
 import { capitalize, fmtDateLong, fmtMin, hhmm, firstName } from './format'
 import type { CultEvent, Item } from './types'
 
@@ -34,6 +34,10 @@ export function inviteMessage(event: CultEvent, item: Item, start: number | null
   ]
   if (event.theme) lines.push(`🔥 Tema: ${event.theme}`)
   if (READING_KINDS.has(item.kind) && event.main_reading?.trim()) lines.push(`📖 Leitura: ${event.main_reading.trim()}`)
+  const d = item.details || {}
+  const def = kindDef(item.kind)
+  if (def.fields.includes('songs') && (d.song_count || 0) > 0) lines.push(`🎵 Prepare ${d.song_count === 1 ? '1 louvor' : `${d.song_count} louvores`} de acordo com o tema`)
+  if (def.fields.includes('hymns') && (d.hymn_count || 0) > 0 && !(d.hymns?.length)) lines.push(`🎵 Escolha ${d.hymn_count === 1 ? '1 hino' : `${d.hymn_count} hinos`} da Harpa Cristã`)
   lines.push(``, `Confirme e veja a programação completa pelo link:`, inviteLink(item.invite_token || ''))
   lines.push(``, `AD Novo Tempo`)
   return lines.join('\n')

@@ -41,16 +41,24 @@ export function detailsText(item: Item, mainReading?: string | null): string {
     if (f === 'notes') continue
     if (f === 'hymns') {
       if (d.hymns?.length) parts.push(d.hymns.map((h) => `Hino ${h.number} - ${h.title}`).join('\n'))
+      const missing = (d.hymn_count || 0) - (d.hymns?.length || 0)
+      if (missing > 0) parts.push(`${missing} hino(s) a definir`)
+      continue
+    }
+    if (f === 'songs') {
+      const songs = (d.songs || '').split('\n').map((x) => x.trim()).filter(Boolean)
+      if (songs.length) parts.push(songs.join('\n'))
+      const missing = (d.song_count || 0) - songs.length
+      if (missing > 0) parts.push(`${missing} louvor(es) a definir`)
       continue
     }
     if (f === 'mode') {
       if (d.mode) parts.push(d.mode === 'playback' ? 'Playback' : 'Tocado')
       continue
     }
-    let v = (d[f] as string | undefined)?.trim()
+    const v = (d[f] as string | undefined)?.trim()
     if (!v) continue
-    if (f === 'songs') parts.push(v)
-    else parts.push(`${FIELD_LABELS[f]}: ${v}`)
+    parts.push(`${FIELD_LABELS[f]}: ${v}`)
   }
   if (d.notes?.trim()) parts.push(`Obs.: ${d.notes.trim()}`)
   return parts.join('\n')

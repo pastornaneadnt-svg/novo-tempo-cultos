@@ -33,6 +33,7 @@ export function ItemSheet({
   const [person, setPerson] = useState<Person | null>(item.person)
   const [details, setDetails] = useState<ItemDetails>(item.details || {})
   const [status, setStatus] = useState<Status>(item.status)
+  const [needsConf, setNeedsConf] = useState(item.needs_confirmation !== false)
   const [saving, setSaving] = useState(false)
   const personChanged = (person?.id || null) !== (item.person_id || null)
   const custom = item.kind === 'outro' || item.kind === 'apoio_outro'
@@ -47,6 +48,7 @@ export function ItemSheet({
         person_id: person?.id || '',
         details,
         status,
+        needs_confirmation: needsConf,
       })
       return true
     } catch (e) {
@@ -160,6 +162,25 @@ export function ItemSheet({
       )}
 
       {person && !person.is_pastor && (
+        <label className="row card" style={{ boxShadow: 'none', border: '1.5px solid var(--line)', cursor: 'pointer', padding: '12px 14px' }}>
+          <div className="grow">
+            <div style={{ fontWeight: 700 }}>Precisa de confirmação?</div>
+            <div className="tiny muted">{needsConf ? 'A pessoa recebe o convite e confirma pelo link.' : 'Fica confirmado direto, sem enviar convite.'}</div>
+          </div>
+          <span className={`switch ${needsConf ? 'on' : ''}`}>
+            <input type="checkbox" checked={needsConf} onChange={(e) => setNeedsConf(e.target.checked)} aria-label="Precisa de confirmação" />
+            <i />
+          </span>
+        </label>
+      )}
+
+      {person && !person.is_pastor && !needsConf && (
+        <div className="card small" style={{ boxShadow: 'none', background: 'var(--green-bg)', color: 'var(--green)', fontWeight: 700 }}>
+          ✓ Confirmado. Não precisa enviar convite.
+        </div>
+      )}
+
+      {person && !person.is_pastor && needsConf && (
         <div className="card stack" style={{ boxShadow: 'none', border: '1.5px solid var(--line)' }}>
           <div className="row between">
             <span className="h2" style={{ fontSize: 13 }}>Convite</span>
@@ -186,7 +207,7 @@ export function ItemSheet({
         </div>
       )}
 
-      <DetailFields kind={item.kind} value={details} onChange={setDetails} readingHint={event.main_reading} />
+      <DetailFields kind={item.kind} value={details} onChange={setDetails} readingHint={event.main_reading} canSetCount />
     </Sheet>
   )
 }

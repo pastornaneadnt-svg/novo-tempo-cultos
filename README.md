@@ -29,6 +29,7 @@ No Supabase → SQL Editor, rode **nesta ordem** (cada arquivo inteiro, depois R
 1. `supabase/schema.sql`
 2. `supabase/002_pastor.sql`
 3. `supabase/003_corrige_pastor.sql`
+4. `supabase/004_confirmacao.sql`
 
 Se rodar o `schema.sql` de novo no futuro, rode também os arquivos seguintes depois dele.
 A primeira conta criada no app vira a do administrador (pastor).

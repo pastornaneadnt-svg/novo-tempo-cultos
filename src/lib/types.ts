@@ -15,7 +15,9 @@ export interface Hymn {
 
 export interface ItemDetails {
   hymns?: Hymn[]
+  hymn_count?: number
   songs?: string
+  song_count?: number
   mode?: 'tocado' | 'playback' | ''
   regente?: string
   solista?: string
@@ -39,6 +41,7 @@ export interface Item {
   person: Person | null
   details: ItemDetails
   status: Status
+  needs_confirmation?: boolean
   response_note?: string | null
   responded_at?: string | null
   invite_token?: string
