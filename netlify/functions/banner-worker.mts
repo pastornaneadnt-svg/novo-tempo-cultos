@@ -1,7 +1,7 @@
 import type { Config } from '@netlify/functions'
 import { getStore } from '@netlify/blobs'
 import { friendlyError, isModelError, models, openai, openaiKey } from '../lib/shared.mts'
-import { buildPrompt, orderedImages, type PosterInput } from '../lib/poster.mts'
+import { backgroundImages, buildBackgroundPrompt, buildPrompt, orderedImages, type BackgroundInput, type PosterInput } from '../lib/poster.mts'
 
 // Trabalho em segundo plano (até 15 min): gera o banner completo e guarda o resultado.
 const jobs = () => getStore({ name: 'banner-jobs', consistency: 'strong' })
@@ -30,16 +30,17 @@ async function edit(model: string, prompt: string, images: string[], size: strin
   return { ok: res.ok, status: res.status, data }
 }
 
-export async function generate(input: PosterInput): Promise<{ image?: string; error?: string }> {
-  const prompt = buildPrompt(input)
-  const images = orderedImages(input)
+export async function generate(input: PosterInput | BackgroundInput): Promise<{ image?: string; error?: string }> {
+  const bgOnly = (input as BackgroundInput).kind === 'background'
+  const prompt = bgOnly ? buildBackgroundPrompt(input as BackgroundInput) : buildPrompt(input as PosterInput)
+  const images = bgOnly ? backgroundImages(input as BackgroundInput) : orderedImages(input as PosterInput)
   const size = input.format === 'quadrado' ? '1024x1024' : '1024x1536'
-  const quality = Netlify.env.get('OPENAI_IMAGE_QUALITY') || 'high'
+  const quality = Netlify.env.get('OPENAI_IMAGE_QUALITY') || (bgOnly ? 'medium' : 'high')
 
   for (const model of models('OPENAI_IMAGE_MODEL', ['gpt-image-1.5', 'gpt-image-1'])) {
     let r
     if (images.length) {
-      r = await edit(model, prompt, images, size, quality, true)
+      r = await edit(model, prompt, images, size, quality, !bgOnly)
       // Alguns modelos não aceitam "input_fidelity": tenta de novo sem.
       if (!r.ok && r.status === 400 && /input_fidelity/i.test(r.data?.error?.message || '')) r = await edit(model, prompt, images, size, quality, false)
     } else {
@@ -64,7 +65,7 @@ export async function generate(input: PosterInput): Promise<{ image?: string; er
 export default async (req: Request) => {
   const { id, secret } = (await req.json().catch(() => ({}))) as { id?: string; secret?: string }
   if (!id || !secret) return
-  const stored = (await jobs().get(`${id}/input`, { type: 'json' })) as { secret: string; input: PosterInput } | null
+  const stored = (await jobs().get(`${id}/input`, { type: 'json' })) as { secret: string; input: PosterInput | BackgroundInput } | null
   if (!stored || stored.secret !== secret) return
   const job = (await jobs().get(id, { type: 'json' })) as { status: string; created: number } | null
   if (!job || job.status !== 'queued') return // já processado (ex.: nova tentativa automática)

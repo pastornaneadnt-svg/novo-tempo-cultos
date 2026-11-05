@@ -93,3 +93,51 @@ ${photoLines.length ? 'PHOTOS PROVIDED:\n' + photoLines.join('\n') : 'No photos 
 ${refIndex ? `STYLE REFERENCE: Image ${refIndex} is a poster the pastor liked. Follow its layout, composition, typography style and overall feel, but do NOT copy its texts, people, logos or exact images.` : ''}
 ${common}`
 }
+
+// ---------- Só a ARTE DE FUNDO (sem pessoas, sem texto) ----------
+// As pessoas são recortadas da foto original e o texto é montado pelo app,
+// para o rosto NUNCA ser alterado e as letras saírem sempre certas.
+export interface BackgroundInput {
+  kind: 'background'
+  format: 'vertical' | 'quadrado'
+  title: string
+  concept?: string
+  hasPeople: boolean
+  reference?: string
+  previous?: string
+  instruction?: string
+}
+
+export function backgroundImages(input: BackgroundInput): string[] {
+  if (input.previous) return [input.previous]
+  return input.reference ? [input.reference] : []
+}
+
+export function buildBackgroundPrompt(input: BackgroundInput): string {
+  const vertical = input.format !== 'quadrado'
+  const layout = vertical
+    ? `- Top 12% of the height: plain, calm and fairly dark (the logo goes there).
+- ${input.hasPeople ? 'From 12% to 62% of the height, CENTER: keep it clear, soft and uncluttered with a gentle glow/backlight — photos of people will be placed there later.' : 'Upper-middle area: soft and uncluttered, with a gentle light glow (a big title goes there).'}
+- Bottom 40%: darker and calm, for white text; decorative props of the theme may sit low on the left and right edges and slightly behind where the title will be, never covering the center.`
+    : `- Left 55%: darker, calm and uncluttered for white text; the logo goes at the top-left.
+- ${input.hasPeople ? 'Right 45%: soft glow/backlight, clear of objects — photos of people will be placed there later.' : 'Right side: elegant theme props and light.'}
+- Theme props may sit in the bottom corners.`
+
+  const rules = `STRICTLY: NO people, NO faces, NO hands, NO silhouettes of people, NO text, NO letters, NO numbers, NO words, NO logos, NO watermarks, NO frames, NO borders.`
+
+  if (input.previous) {
+    return `Image 1 is the background artwork of a church event poster. Change it exactly as requested: "${(input.instruction || '').replace(/"/g, "'")}".
+Keep the same composition rules:
+${layout}
+${rules}`
+  }
+
+  return `Create ONLY the BACKGROUND ARTWORK for a modern ${vertical ? 'vertical (2:3)' : 'square (1:1)'} church event poster — no text and no people; text and people photos will be added on top later.
+STYLE: contemporary large-church / worship-conference visual identity: premium, minimal and cinematic, high-end studio lighting, depth of field, soft haze, subtle light rays and bokeh, rich gradients, refined 3D-like objects. Modern, not cartoonish, not cluttered.
+EVENT: "${input.title.replace(/"/g, "'")}". WHAT IT IS ABOUT: ${input.concept?.trim() || 'a reverent and joyful worship service'}.
+Add elegant symbolic objects that match this event (e.g. bread, grapes and a golden chalice for Holy Communion; flowers and a pink ribbon for a women's Outubro Rosa event; an open Bible and light for a teaching night; water for a baptism).
+COLORS: church brand — vibrant orange #FE6402, deep graphite #283135 and warm golden light — unless the event clearly calls for another palette (e.g. pink for women's events).
+${input.reference ? 'Image 1 is a reference poster the pastor liked: borrow its color palette, lighting mood and decorative style ONLY. Do NOT include its people, texts, logos or layout boxes.\n' : ''}COMPOSITION (very important):
+${layout}
+${rules}`
+}

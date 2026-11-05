@@ -1,7 +1,7 @@
 import type { Config } from '@netlify/functions'
 import { getStore } from '@netlify/blobs'
 import { authorized, json, openaiKey } from '../lib/shared.mts'
-import type { PosterInput } from '../lib/poster.mts'
+import type { BackgroundInput, PosterInput } from '../lib/poster.mts'
 
 // POST: cria um pedido de banner completo e dispara o trabalho em segundo plano.
 // GET ?id=: diz se o banner já ficou pronto (e devolve a imagem).
@@ -22,8 +22,9 @@ export default async (req: Request) => {
   }
 
   if (!openaiKey()) return json({ error: 'A chave da OpenAI ainda não foi cadastrada no Netlify (OPENAI_API_KEY).' }, 503)
-  const input = (await req.json().catch(() => null)) as PosterInput | null
-  if (!input?.headline) return json({ error: 'Faltou o texto principal do banner.' }, 400)
+  const input = (await req.json().catch(() => null)) as (PosterInput & Partial<BackgroundInput>) | null
+  if (!input) return json({ error: 'Pedido inválido.' }, 400)
+  if (input.kind !== 'background' && !input.headline) return json({ error: 'Faltou o texto principal do banner.' }, 400)
   if ((input.photos?.length || 0) > 8) return json({ error: 'Use no máximo 8 fotos por banner.' }, 400)
 
   const id = crypto.randomUUID()
