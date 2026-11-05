@@ -2,12 +2,13 @@ import { useMemo, useState } from 'react'
 import harpa from '../harpa.json'
 import type { Hymn } from '../lib/types'
 import { Icon } from './ui'
+import { ToneSelect } from './ToneSelect'
 
 const HYMNS: Hymn[] = (harpa as [number, string][]).map(([number, title]) => ({ number, title }))
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 const INDEX = HYMNS.map((h) => ({ h, key: norm(h.title) }))
 
-export function HymnPicker({ value, onChange, max }: { value: Hymn[]; onChange: (v: Hymn[]) => void; max?: number }) {
+export function HymnPicker({ value, onChange, max, withTone }: { value: Hymn[]; onChange: (v: Hymn[]) => void; max?: number; withTone?: boolean }) {
   const full = max != null && value.length >= max
   const [q, setQ] = useState('')
   const results = useMemo(() => {
@@ -27,6 +28,7 @@ export function HymnPicker({ value, onChange, max }: { value: Hymn[]; onChange: 
         <div className="hymn-row" key={`${h.number}-${i}`}>
           <span className="n">{h.number}</span>
           <span className="grow" style={{ fontWeight: 600 }}>{h.title}</span>
+          {withTone && <ToneSelect value={h.tone} onChange={(t) => onChange(value.map((x, j) => (j === i ? { ...x, tone: t } : x)))} />}
           <button type="button" className="icon-btn plain" aria-label="Remover hino" onClick={() => onChange(value.filter((_, j) => j !== i))}><Icon.close /></button>
         </div>
       ))}

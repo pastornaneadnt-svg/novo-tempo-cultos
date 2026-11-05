@@ -12,6 +12,7 @@ export type Status = 'pendente' | 'aceito' | 'recusado'
 export interface Hymn {
   number: number
   title: string
+  tone?: string
 }
 
 export interface ItemDetails {
@@ -19,6 +20,7 @@ export interface ItemDetails {
   hymn_count?: number
   songs?: string
   song_count?: number
+  song_tones?: string[]
   mode?: 'tocado' | 'playback' | ''
   tone?: string
   playback_link?: string

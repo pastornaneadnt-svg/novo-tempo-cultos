@@ -40,13 +40,13 @@ export function detailsText(item: Item, mainReading?: string | null): string {
   for (const f of def.fields) {
     if (f === 'notes') continue
     if (f === 'hymns') {
-      if (d.hymns?.length) parts.push(d.hymns.map((h) => `Hino ${h.number} - ${h.title}`).join('\n'))
+      if (d.hymns?.length) parts.push(d.hymns.map((h) => `Hino ${h.number} - ${h.title}${d.mode === 'tocado' && h.tone ? ` (Tom: ${h.tone})` : ''}`).join('\n'))
       const missing = (d.hymn_count || 0) - (d.hymns?.length || 0)
       if (missing > 0) parts.push(`${missing} hino(s) a definir`)
       continue
     }
     if (f === 'songs') {
-      const songs = (d.songs || '').split('\n').map((x) => x.trim()).filter(Boolean)
+      const songs = (d.songs || '').split('\n').map((x, i) => (x.trim() ? x.trim() + (d.mode === 'tocado' && d.song_tones?.[i] ? ` (Tom: ${d.song_tones[i]})` : '') : '')).filter(Boolean)
       if (songs.length) parts.push(songs.join('\n'))
       const missing = (d.song_count || 0) - songs.length
       if (missing > 0) parts.push(`${missing} louvor(es) a definir`)

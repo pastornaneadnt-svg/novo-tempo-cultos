@@ -4,7 +4,7 @@ import { api } from '../lib/api'
 import { itemLabel, kindDef } from '../lib/catalog'
 import { capitalize, firstName, fmtDateLong, fmtMin, hhmm, programItems, supportItems, withTimes } from '../lib/format'
 import type { InviteBundle, ItemDetails, Status } from '../lib/types'
-import { DetailFields } from '../components/DetailFields'
+import { DetailFields, missingToAccept } from '../components/DetailFields'
 import { ReadOnlyTimeline } from '../components/Timeline'
 import { Spinner, StatusBadge, usePolling, useToast } from '../components/ui'
 import { BrandBar } from './Home'
@@ -49,6 +49,7 @@ export function InvitePage() {
   const hasFields = def.fields.some((f) => f !== 'notes')
   const answered = item.status !== 'pendente'
   const showForm = !answered || editing
+  const missing = details ? missingToAccept(item.kind, details) : []
 
   async function respond(status: Status) {
     setBusy(true)
@@ -107,7 +108,12 @@ export function InvitePage() {
               <span>Mensagem para o pastor (opcional)</span>
               <textarea className="textarea" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ex.: vou precisar de 2 microfones" />
             </label>
-            <button className="btn block" disabled={busy} onClick={() => respond('aceito')}>✓ Aceito a oportunidade</button>
+            {missing.length > 0 && (
+              <div className="card small" style={{ boxShadow: 'none', background: 'var(--yellow-bg)', color: 'var(--yellow)', fontWeight: 600 }}>
+                Para confirmar, preencha {missing.length === 1 ? missing[0] : missing.slice(0, -1).join(', ') + ' e ' + missing[missing.length - 1]}.
+              </div>
+            )}
+            <button className="btn block" disabled={busy || missing.length > 0} onClick={() => respond('aceito')}>✓ Aceito a oportunidade</button>
             <button className="btn ghost block" disabled={busy} onClick={() => respond('recusado')}>Não poderei participar</button>
             {answered && <button className="btn ghost sm" onClick={() => setEditing(false)}>Cancelar</button>}
           </div>

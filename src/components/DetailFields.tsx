@@ -1,6 +1,7 @@
 import { FIELD_LABELS, FIELD_PLACEHOLDERS, READING_KINDS, kindDef } from '../lib/catalog'
 import type { ItemDetails } from '../lib/types'
 import { HymnPicker } from './HymnPicker'
+import { ToneSelect } from './ToneSelect'
 
 const ORD = ['1º', '2º', '3º', '4º', '5º', '6º', '7º', '8º']
 
@@ -68,7 +69,7 @@ export function DetailFields({
               ) : (
                 <div className="small muted">Escolha {count === 1 ? '1 hino' : `${count} hinos`} da Harpa Cristã.</div>
               )}
-              <HymnPicker value={hymns} onChange={(h) => set({ hymns: h })} max={count} />
+              <HymnPicker value={hymns} onChange={(h) => set({ hymns: h })} max={count} withTone={value.mode === 'tocado'} />
               {missing > 0 && <div className="tiny muted">{missing === 1 ? 'Falta 1 hino' : `Faltam ${missing} hinos`}</div>}
             </div>
           )
@@ -94,7 +95,15 @@ export function DetailFields({
                 <div className="small muted">Coloque {count === 1 ? 'o louvor' : `os ${count} louvores`} de acordo com o tema do culto.</div>
               )}
               {Array.from({ length: count }, (_, i) => (
-                <input key={i} className="input" value={lines[i] || ''} placeholder={`${ORD[i]} louvor`} onChange={(e) => setLine(i, e.target.value)} />
+                <div className="row" key={i} style={{ gap: 8 }}>
+                  <input className="input grow" value={lines[i] || ''} placeholder={`${ORD[i]} louvor`} onChange={(e) => setLine(i, e.target.value)} />
+                  {value.mode === 'tocado' && (
+                    <ToneSelect
+                      value={value.song_tones?.[i]}
+                      onChange={(t) => set({ song_tones: Array.from({ length: count }, (_, j) => (j === i ? t : value.song_tones?.[j] || '')) })}
+                    />
+                  )}
+                </div>
               ))}
             </div>
           )
@@ -107,12 +116,7 @@ export function DetailFields({
                 <button type="button" className={value.mode === 'tocado' ? 'on' : ''} onClick={() => set({ mode: value.mode === 'tocado' ? '' : 'tocado' })}>🎸 Tocado</button>
                 <button type="button" className={value.mode === 'playback' ? 'on' : ''} onClick={() => set({ mode: value.mode === 'playback' ? '' : 'playback' })}>🎧 Playback</button>
               </div>
-              {value.mode === 'tocado' && (
-                <label className="field" style={{ marginTop: 6 }}>
-                  <span>Tom (opcional)</span>
-                  <input className="input" value={value.tone || ''} placeholder="Ex.: G — ou um por louvor: G, D, A" onChange={(e) => set({ tone: e.target.value })} />
-                </label>
-              )}
+              {value.mode === 'tocado' && <div className="tiny muted">Escolha o tom ao lado de cada {kind === 'harpa' ? 'hino' : 'louvor'} (opcional).</div>}
               {value.mode === 'playback' && (
                 <label className="field" style={{ marginTop: 6 }}>
                   <span>Link do playback no YouTube (opcional)</span>
@@ -125,7 +129,7 @@ export function DetailFields({
         const placeholder = FIELD_PLACEHOLDERS[f]
         return (
           <label className="field" key={f}>
-            <span>{FIELD_LABELS[f]}</span>
+            <span>{FIELD_LABELS[f]}{(REQUIRED[kind] as string[] | undefined)?.includes(f) && <b style={{ color: 'var(--orange)' }}> *</b>}</span>
             {multiline ? (
               <textarea className="textarea" rows={f === 'notes' ? 2 : 3} value={(value[f] as string) || ''} placeholder={placeholder} onChange={(e) => set({ [f]: e.target.value })} />
             ) : (
@@ -138,16 +142,36 @@ export function DetailFields({
   )
 }
 
+// Campos que precisam estar preenchidos para a pessoa conseguir confirmar a oportunidade.
+const REQUIRED: Record<string, ('message_title' | 'reference')[]> = { pregacao: ['message_title', 'reference'] }
+
+export function missingToAccept(kind: string, d: ItemDetails): string[] {
+  const def = kindDef(kind)
+  const out: string[] = []
+  if (def.fields.includes('hymns')) {
+    const count = Math.max(d.hymn_count || 1, 1)
+    if ((d.hymns?.length || 0) < count) out.push(count === 1 ? 'o hino da Harpa' : `os ${count} hinos da Harpa`)
+  }
+  if (def.fields.includes('songs')) {
+    const count = songCount(d)
+    const lines = songLines(d)
+    if (Array.from({ length: count }, (_, i) => lines[i]?.trim()).some((x) => !x)) out.push(count === 1 ? 'o louvor' : `os ${count} louvores`)
+  }
+  for (const f of REQUIRED[kind] || []) if (!d[f]?.trim()) out.push(f === 'message_title' ? 'o título da mensagem' : 'o texto bíblico')
+  return out
+}
+
 /** Resumo curto dos detalhes, para mostrar no cartão da linha do tempo. */
 export function detailsSummary(kind: string, d: ItemDetails, readingHint?: string | null): string {
   const def = kindDef(kind)
   const out: string[] = []
-  if (d.hymns?.length) out.push(d.hymns.map((h) => `${h.number} · ${h.title}`).join('\n'))
+  const tocado = d.mode === 'tocado'
+  if (d.hymns?.length) out.push(d.hymns.map((h) => `${h.number} · ${h.title}${tocado && h.tone ? ` (${h.tone})` : ''}`).join('\n'))
   if (def.fields.includes('hymns')) {
     const missing = (d.hymn_count || 0) - (d.hymns?.length || 0)
     if (missing > 0) out.push(d.hymns?.length ? `+ ${missing} hino(s) a definir` : `${missing} hino(s) a definir`)
   }
-  const songs = songLines(d).map((s) => s.trim()).filter(Boolean)
+  const songs = songLines(d).map((s, i) => (s.trim() ? s.trim() + (tocado && d.song_tones?.[i] ? ` (${d.song_tones[i]})` : '') : '')).filter(Boolean)
   if (songs.length) out.push('♪ ' + songs.join(' · '))
   if (def.fields.includes('songs')) {
     const missing = (d.song_count || 0) - songs.length
