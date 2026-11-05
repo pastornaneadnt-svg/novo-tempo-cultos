@@ -26,8 +26,10 @@ Responda SOMENTE com um JSON válido, neste formato:
   "chamadas": ["3 chamadas curtas e fortes para o banner, de 2 a 6 palavras cada, sem ponto final"],
   "subtitulo": "uma frase curta de convite (até 12 palavras)",
   "legenda": "legenda para WhatsApp/Instagram com 3 a 6 linhas: convite, tema, dia e horário, uma frase do versículo se houver, e no final #ADNovoTempo e mais 2 hashtags. Pode usar poucos emojis.",
-  "imagem": "descrição EM INGLÊS de uma cena simbólica e bonita para o FUNDO do banner, ligada ao tema (ex.: luz, natureza, céu, símbolos bíblicos). Sem pessoas em close, sem texto, sem letras, sem logotipos."
-}`
+  "imagem": "descrição EM INGLÊS de uma cena simbólica e bonita para o FUNDO do banner, ligada ao tema (ex.: luz, natureza, céu, símbolos bíblicos). Sem pessoas em close, sem texto, sem letras, sem logotipos.",
+  "conceito": "EM INGLÊS, 2 a 4 frases: o que é este culto/evento (ex.: Santa Ceia = comunhão, pão, uvas, cálice; Chá de Mulheres = delicadeza, flores; culto de jovens = energia; culto de missões = mundo, chamado), o clima visual, os elementos simbólicos e a paleta de cores sugerida para o banner."
+}
+As chamadas devem combinar com o TIPO de evento (ex.: para "Culto de Santa Ceia", uma das chamadas pode ser o próprio "Culto de Santa Ceia").`
 
   for (const model of models('OPENAI_TEXT_MODEL', ['gpt-5-mini', 'gpt-4.1-mini', 'gpt-4o-mini'])) {
     const { ok, status, data } = await openai('chat/completions', {
@@ -46,6 +48,7 @@ Responda SOMENTE com um JSON válido, neste formato:
           subtitulo: String(out.subtitulo || ''),
           legenda: String(out.legenda || ''),
           imagem: String(out.imagem || ''),
+          conceito: String(out.conceito || ''),
         })
       } catch {
         return json({ error: 'A IA respondeu num formato inesperado. Tente de novo.' }, 502)

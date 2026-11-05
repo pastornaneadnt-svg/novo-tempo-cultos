@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase'
 import type { EventBundle } from '../lib/types'
 import { Icon, Spinner, useToast } from '../components/ui'
 import { InvalidLink } from './EventPage'
+import { AiPoster } from '../components/AiPoster'
 
 interface AiText {
   chamadas: string[]
@@ -85,6 +86,7 @@ function BannerPage({ eventId, token }: { eventId: string; token: string | null 
   const [showPreacher, setShowPreacher] = useState(true)
   const [footer, setFooter] = useState(() => readLS<string>(FOOTER_KEY, ''))
   const [busy, setBusy] = useState<'' | 'text' | 'image'>('')
+  const [mode, setMode] = useState<'ia' | 'simples'>('ia')
 
   useEffect(() => {
     api.getEvent(eventId, token).then(setData).catch(() => setData(null))
@@ -216,6 +218,14 @@ function BannerPage({ eventId, token }: { eventId: string; token: string | null 
       </header>
       <main className="page">
         <div className="seg">
+          <button className={mode === 'ia' ? 'on' : ''} onClick={() => setMode('ia')}>✨ Banner com IA</button>
+          <button className={mode === 'simples' ? 'on' : ''} onClick={() => setMode('simples')}>Modelo simples</button>
+        </div>
+        {mode === 'ia' ? (
+          <AiPoster event={event} token={token} preacher={preacher} />
+        ) : (
+        <>
+        <div className="seg">
           <button className={format === 'stories' ? 'on' : ''} onClick={() => setFormat('stories')}>Stories / Status</button>
           <button className={format === 'feed' ? 'on' : ''} onClick={() => setFormat('feed')}>Feed / Grupo</button>
         </div>
@@ -290,12 +300,14 @@ function BannerPage({ eventId, token }: { eventId: string; token: string | null 
           <textarea className="textarea" rows={6} value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="Toque em “Criar banner com IA” para a IA escrever a legenda." />
           <button className="btn ghost sm" disabled={!caption} onClick={async () => toast((await copyText(caption)) ? 'Legenda copiada!' : 'Não foi possível copiar')}><Icon.copy /> Copiar legenda</button>
         </div>
+        </>
+        )}
       </main>
 
-      <div className="banner-actions">
+      {mode === 'simples' && <div className="banner-actions">
         <button className="btn ghost" onClick={save} disabled={!!busy}>Baixar</button>
         <button className="btn whats grow" onClick={share} disabled={!!busy}><Icon.whats /> Compartilhar</button>
-      </div>
+      </div>}
     </div>
   )
 }

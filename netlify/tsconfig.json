@@ -8,7 +8,7 @@
     "noEmit": true,
     "strict": true,
     "skipLibCheck": true,
-    "types": ["@netlify/functions"]
+    "types": ["@netlify/functions", "node"]
   },
   "include": ["**/*.mts"]
 }
